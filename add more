@@ -1,0 +1,383 @@
+@extends('layout.main-after-login')
+@section('content')
+    <div class="main-content">
+        <div class="main-heading-back-url">
+            <div class="main-heading">
+                <h4>Add new staff </h4>
+            </div>
+            <div class="go-back-url">
+                <a href="#" onclick="history.back()"> <span id="back-url"> << Go back </span> </a>
+            </div>
+        </div>
+        <!-- Description Page -->
+        <div class="description_page">
+            @if (session()->has('msg'))
+                <div id="msg" class="alert alert-success">
+                    {{ session()->get('msg') }}
+                </div>
+            @endif
+            {{-- @if ($errors->any())
+                <div class="mb-3 user-error-message">
+                    <span class="help-block errors error-message">
+                        <strong>{{ $errors->first() }}</strong>
+                    </span>
+                </div>
+            @endif --}}
+            <div class="tab-content tab_inner_content" id="nav-tabContent">
+                <form action="{{ route('saveStaff') }}" method="post" enctype="multipart/form-data" id="add-staff-form">
+                    @csrf
+                    <span id="heading-title">
+                        <img src="{{ asset('images/add-consumer.svg') }}"> Add staff </span>
+                    <div class="row add-consumer-form">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">Staff name </label>
+                                <input type="text" name="name" id="staffName" placeholder="Staff Name"
+                                    class="form-control" value="{{ old('name') }}" required autocomplete="off" />
+                                @if ($errors->has('name'))
+                                    <div class="error">{{ $errors->first('name') }}</div>
+                                @endif
+                                <span class="input-error-message" id="name_error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="designation">Designation </label>
+                                <div class="dropdown job-designation">
+                                    <select class="form-select" aria-label="Default select example" type="text"
+                                        name="designation" aria-required="true" aria-invalid="false" required>
+                                        <option disabled selected false>Select Designation</option>
+                                        @foreach ($designations as $designation)
+                                            <option id="designation_{{ $designation->id }}" value="{{ $designation->id }}">
+                                                {{ $designation->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @if ($errors->has('designation'))
+                                    <div class="error">{{ $errors->first('designation') }}</div>
+                                @endif
+                                <span class="input-error-message" id="designation_error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="designation">Phone Number </label>
+                                <div class="countrycode">
+                                    <input type="text" placeholder="(+61)" name="country_code" value="+61" readonly
+                                        class="form-control country-number" autocomplete="off" />
+                                    <input type="phone" name="phone" id="phone" placeholder="Phone"
+                                        onkeypress="return isNumber(event)" maxlength="11" class="phoneinput form-control"
+                                        value="{{ old('phone') }}" required autocomplete="off" />
+                                    @if ($errors->has('phone'))
+                                        <div class="error">{{ $errors->first('phone') }}</div>
+                                    @endif
+                                </div>
+                                <span class="input-error-message" id="phone_error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="designation">Email </label>
+                                <input type="text" name="email" id="email" placeholder="Email" class="form-control"
+                                    value="{{ old('email') }}" required autocomplete="off" />
+                                @if ($errors->has('email'))
+                                    <div class="error">{{ $errors->first('email') }}</div>
+                                @endif
+                                <span class="input-error-message" id="email_error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label" for="designation">Grade </label>
+                                <div class="dropdown job-designation">
+                                    <select class="form-select" aria-label="Default select example" type="text"
+                                        name="experience" aria-required="true" aria-invalid="false" required>
+                                        <option disabled selected>Select Grade</option>
+                                        @foreach ($grades as $grade)
+                                            <option value="{{ $grade['value'] }}">{{ $grade['grade'] }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @if ($errors->has('experience'))
+                                    <div class="error">{{ $errors->first('experience') }}</div>
+                                @endif
+                                <span class="input-error-message" id="experience_error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="consumer-upload-section">
+                        <h6>Qualification Documents</h6>
+                    </div>
+                    <div class="row consumer-upload-documents">
+                        <!-- Document upload License-->
+                        <div id="qulification_file">
+                            <div class="col-md-12 consumer-agency-documents-upload" id="docDiv-1">
+                                <div class="upload-doc">
+                                    <div class="doc-file">
+                                        <main data-grid>
+                                            <section>
+                                                <div class="file-upload">
+                                                    <input id="doc-1" name="qulifications[]" type="file"
+                                                        value="{{ old('qulifications[]') }}"  accept="image/png, image/jpeg,image/jpg,image/webp,application/pdf" />
+                                                    <label for="doc-1">
+                                                        <button><i class="fas fa-paperclip"></i></button>
+                                                        <span id="lable-1">Choose File</span>
+                                                    </label>
+                                                </div>
+
+                                            </section>
+                                        </main>
+                                    </div>
+                                </div>
+                                <span class="error" id="doc_error"></span>
+                            </div>
+                        </div>
+                        <div class="add-more-file">
+                            <a href="#" id="addMore_doc" data-id="1" style="text-decoration-line: none">Add
+                                more +</a>
+                        </div>
+                    </div>
+                    <div class="consumer-upload-section">
+                        <h6>Attach Documents</h6>
+                    </div>
+                    <div class="row consumer-upload-documents">
+                        <!-- Document upload License-->
+                        <div id="id_proof_file">
+                            <div class="col-md-12 consumer-agency-documents-upload" id="fileDiv-1">
+                                <div class="upload-doc">
+                                    <div class="doc-file">
+                                        <main data-grid>
+                                            <section>
+                                                <div class="file-upload">
+                                                    <input id="file-1" name="attachs[]" type="file"
+                                                        value="{{ old('attachs[]') }}"  accept="image/png, image/jpeg,image/jpg,image/webp,application/pdf" />
+                                                    <label for="file-1">
+                                                        <button><i class="fas fa-paperclip"></i></button>
+                                                        <span id="lable-1">Choose File</span>
+                                                    </label>
+                                                </div>
+
+                                            </section>
+                                        </main>
+                                    </div>
+                                </div>
+                                <span class="error" id="attachs_error"></span>
+                            </div>
+                        </div>
+                        <div class="add-more-file">
+                            <a href="#" id="addMore_attach" data-id="1" style="text-decoration-line: none">Add
+                                more +</a>
+                        </div>
+                    </div>
+                    <!-- Profile upload image -->
+                    <div class="col-md-6 Customer-add-profile">
+                        <div class="image-upload">
+                            <h6> Profile Photo </h6>
+                            <input type="file" name="profile_img" id="logo" onchange="fileValue(this)"
+                                value="{{ old('profile_img') }}" accept="image/png,image/jpeg,image/jpg,image/webp">
+                            <label for="logo" class="upload-field" id="file-label">
+                                <div class="file-thumbnail">
+                                    <img id="image-preview" src="{{ asset('images/placeholder.png') }}" alt="">
+                                    <p>Supports JPG, PNG, SVG</p>
+                                </div>
+                            </label>
+                        </div>
+                        <span class="input-error-message" id="profile_img_error"></span>
+                    </div>
+
+
+                    <div class="holder d-none">
+                        <img class="preview_image" id="imgPreview" src="#" alt="pic" />
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 add-consumer-button">
+                            <button type="submit" class="save-consumer-button staff-add">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endsection
+@section('page-scripts')
+    <script>
+        $(document).ready(() => {
+            $("#profile_img").change(function() {
+                const file = this.files[0];
+                if (file) {
+                    let reader = new FileReader();
+                    reader.onload = function(event) {
+                        $("#imgPreview")
+                            .attr("src", event.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                    $('.holder').removeClass('d-none');
+                }
+            });
+            $(document).on('click', '.staff-add', function(e) {
+                if ($('#file-1').val() == "") {
+                    $('#attachs_error').html('Please select at list one document.');
+                } else {
+                    $('#attachs_error').html('');
+                }
+            });
+            $(document).on('click', '.staff-add', function(e) {
+                if ($('#doc-1').val() == "") {
+                    $('#doc_error').html('Please select at list one document.');
+                } else {
+                    $('#doc_error').html('');
+                }
+            });
+            $('#doc-1').on('click', function(e) {
+                $('#doc_error').html('');
+            });
+            $('#file-1').on('click', function(e) {
+                $('#attachs_error').html('');
+            });
+            $('#phone').on('keyup', function(e) {
+                $('#phone-error').html('');
+            });
+            //Add more attach
+            var clicked = 2;
+            $("#addMore_attach").on('click', function() {
+                let data_id = $(this).data('id');
+                let newDataId = clicked;
+                let html = `<div class="col-md-12 consumer-agency-documents-upload" id="fileDiv-${newDataId}">
+                    <div class="upload-doc">
+                        <div class="doc-file">
+                        <main data-grid>
+                            <section>
+                                <div class="file-upload">
+                                    <input id="file-${newDataId}" name="attachs[]" type="file"  accept="image/png, image/jpeg,image/jpg,image/webp,application/pdf" value="{{ old('attachs[]') }}"/>
+                                    <label for="file-${newDataId}">
+                                        <button><i class="fas fa-paperclip"></i></button>
+                                             <span id="lable-${newDataId}">Choose File</span>
+                                    </label>
+                                </div>
+                            </section>
+                            <div class="remove-field"><a href="#" id="removeMore_attach" data-id="fileDiv-${newDataId}">-</a></div>
+                        </main>
+                        </div>
+                    </div>
+                
+                </div>
+               `;
+                $('#id_proof_file').append(html);
+                clicked++;
+                $('#addMore_attach').attr('data-id', newDataId);
+            });
+            //Remove
+            $(document).on('click', '#removeMore_doc', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                $('#' + id).remove();
+            });
+            $(document).on('click', '#removeMore_attach', function(e) {
+                e.preventDefault();
+                let id = $(this).data('id');
+                $('#' + id).remove();
+            });
+            
+            var clicked1 =2;
+            $("#addMore_doc").on('click', function() {
+                let data_id = $(this).data('id');
+                let newDataId = clicked1;
+                let html = `<div class="col-md-12 consumer-agency-documents-upload" id="docDiv-${newDataId}">
+                    <div class="upload-doc">
+                        <div class="doc-file">
+                        <main data-grid>
+                            <section>
+                                <div class="file-upload">
+                                    <input id="doc-${newDataId}" name="qulifications[]" type="file"  accept="image/png, image/jpeg,image/jpg,image/webp,application/pdf" value="{{ old('qulifications[]') }}"/>
+                                    <label for="doc-${newDataId}">
+                                        <button><i class="fas fa-paperclip"></i></button>
+                                             <span id="lable-${newDataId}">Choose File</span>
+                                    </label>
+                                </div>
+                            </section>
+                            <div class="remove-field"><a href="#" id="removeMore_doc" data-id="docDiv-${newDataId}">-</a></div>
+                        </main>
+                        </div>
+                    </div>
+                
+                </div>
+               `;
+                $('#qulification_file').append(html);
+                clicked1++;
+                $('#addMore_doc').attr('data-id', newDataId);
+            });
+
+            var  count = 1;
+            $(document).on('click','#addMore_doc',function(e){
+                e.preventDefault();
+               count++;
+                if(count > 4)
+                {
+                    $('#addMore_doc').hide();
+                }else{
+                    $('#addMore_doc').show();
+                }
+            });
+            $(document).on('click','#removeMore_doc',function(e){
+                e.preventDefault();
+                count--;
+                $('#addMore_doc').show();
+            });
+            var  count1 = 1;
+            $(document).on('click','#addMore_attach',function(e){
+                e.preventDefault();
+               count1++;
+                if(count1 > 4)
+                {
+                    $('#addMore_attach').hide();
+                }else{
+                    $('#addMore_attach').show();
+                }
+            });
+            $(document).on('click','#removeMore_attach',function(e){
+                e.preventDefault();
+                count1--;
+                $('#addMore_attach').show();
+            });
+            // $(document).on('blur', '#staffName', function(e) {
+            //     let name = $("#staffName").val();
+            //     let staffRegExp = /^[0-9a-zA-Z '']+$/;
+            //     if (name == '' || name == null || name == 'undefined') {
+            //         $('#name_error').html('Staff name is required');
+            //         $('#name_error').css('margin-left', '2px');
+            //         return false;
+            //     }
+            //     if (!staffRegExp.test(name)) {
+            //         $('#name_error').html('Staff name should be valid.');
+            //         $('#name_error').css('margin-left', '2px');
+            //         return false;
+            //     }
+            //     e.preventDefault();
+            // });
+            // $(document).on('keydown', '#staffName', function() {
+            //     $('#name_error').html('');
+            // });
+
+
+            $(document).on('change', '.file-upload', function(e) {
+                e.preventDefault();
+                const path = e.target.value;
+                const filenameField = e.target.parentElement.querySelector("span");
+                const filename = path.split(/\/|\\/).pop();
+                if (filename) filenameField.innerText = filename;
+                else filenameField.innerText = "Filename";
+            });
+        });
+        /** validation for entering only digits start */
+        function isNumber(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+        /** validation for entering only digits end */
+    </script>
+@endsection
